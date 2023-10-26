@@ -253,17 +253,12 @@ def average_prs_deletions_number(pull_requests):
 
 
 def generate_csv_report(projects_data):
-    with open('projects_report_all_2.csv', 'w') as data_file:
-        header = ['project name', 'project age', '# commits', '# PRs', '# merged PRs', '# rejected PRs',
-                  'average time between commits', 'average PR life time', 'average PRs between time',
-                  'average merged PRs between time',
-                  'Average % merged PRs by 2 weeks', 'median time between commits',
-                  'median PR life time', 'median PRs between time', 'median merged PRs between time',
-                  'median % merged PRs by 2 weeks', '# commiters', 'language', 'number PRs to default branch',
-                  'percentage PRs to default branch', 'number PRs intra branch', 'percentage PRs intra branch',
-                  'forks', 'size', 'average commits by PR', 'average comments by PR', 'average changed files by PR',
-                  'average additions by PR', 'average deletions by PR', '# pairwise conflicts',
-                  '# conflicting merged PRs', '% conflicting merged PRs', '# conflicting rejected PRs', '% conflicting rejected PRs']
+    with open('projects_features.csv', 'w') as data_file:
+        header = ['project name', 'AGE', 'noFiles', 'LoC', 'LoCbyFiles', 'noCommits', 'noPRs',
+                  'noMergedPRs', 'poMergedPRs', 'noRejectedPRs', 'poRejectedPRs', 'ICT', 'PRT',
+                  'IPRT', 'IMPRT', 'PoMPRTW', 'MICT', 'MPRT', 'MIPRT', 'MIMPRT', 'poMMPRTW',
+                  'noCommiters', 'noPRsDF', 'poPRsDF', 'forks', 'commitsByPR', 'commentsByPR',
+                  'changedFilesByPR', 'additionsByPR', 'deletionsByPR', 'target']
         csv_writer = csv.writer(data_file)
         csv_writer.writerow(header)
         for project_data in projects_data:
@@ -277,46 +272,37 @@ def main():
     for project in projects:
         project_data = []
 
-        project_data.append(project.name)
-        project_data.append((datetime.datetime(2019, 6, 1).astimezone() - project.created_at).days)
-        project_data.append(project.commits.count())
-        project_data.append(project.pull_requests.count())
-        project_data.append(project.pull_requests.filter(merged=True).count())
-        project_data.append(project.pull_requests.filter(merged=False, closed_at__isnull=False).count())
-        project_data.append(avg_time_between_commits(project.commits.all()))
-        project_data.append(avg_pr_life_time(project.pull_requests.all()))
-        project_data.append(avg_time_between_prs(project.pull_requests.all()))
-        project_data.append(avg_time_between_merged_prs(project.pull_requests.all()))
-        project_data.append(avg_percentage_merged_prs_by_2_weeks(project.pull_requests.all()))
-        project_data.append(median_time_between_commits(project.commits.all()))
-        project_data.append(median_pr_life_time(project.pull_requests.all()))
-        project_data.append(median_time_between_prs(project.pull_requests.all()))
-        project_data.append(median_time_between_merged_prs(project.pull_requests.all()))
-        project_data.append(median_percentage_merged_prs_by_2_weeks(project.pull_requests.all()))
-        project_data.append(commiters_count(project.commits.all()))
-        # news
-        project_data.append(project.language)
-        project_data.append(number_prs_to_default_branch(project))
-        project_data.append(percentage_prs_to_default_branch(project))
-        project_data.append(number_prs_intra_branch(project.pull_requests.all()))
-        project_data.append(percentage_prs_intra_branch(project.pull_requests.all()))
-        project_data.append(project.github_raw_data.get('forks', 0) if project.github_raw_data else 0)
-        project_data.append(project.github_raw_data.get('size', 0) if project.github_raw_data else 0)
-        project_data.append(average_prs_commits_number(project.pull_requests.all()))
-        project_data.append(average_prs_comments_number(project.pull_requests.all()))
-        project_data.append(average_prs_changed_files_number(project.pull_requests.all()))
-        project_data.append(average_prs_additions_number(project.pull_requests.all()))
-        project_data.append(average_prs_deletions_number(project.pull_requests.all()))
-        # pairwise conflicts
-        project_data.append(project.get_pairwise_conflicts_count())
-        conflicting_merged_prs_count = get_conflicting_prs_count(project.pull_requests.filter(merged=True))
-        conflicting_rejected_prs_count = get_conflicting_prs_count(project.pull_requests.filter(merged=False, closed_at__isnull=False))
-        prs_count = project.pull_requests.count()
-        project_data.append(conflicting_merged_prs_count)
-        project_data.append((conflicting_merged_prs_count / prs_count) * 100 if prs_count > 0 else 0)
-        project_data.append(conflicting_rejected_prs_count)
-        project_data.append((conflicting_rejected_prs_count / prs_count) * 100 if prs_count > 0 else 0)
-
+        project_data.append(project.name) # project name
+        project_data.append((datetime.datetime(2019, 6, 1).astimezone() - project.created_at).days) # AGE
+        project_data.append(project.number_of_files) # noFiles
+        project_date.append(project.loc) # LoC
+        project_data.append(project.loc/(project.number_of_files*1.0)) #LoCbyFiles
+        project_data.append(project.commits.count()) # noCommits
+        project_data.append(project.pull_requests.count()) # noPRs
+        project_data.append(project.pull_requests.filter(merged=True).count()) # noMergedPRs
+        project_data.append(project.pull_requests.filter(merged=True).count()/(project.pull_requests.count()*1.0)) # poMergedPRs
+        project_data.append(project.pull_requests.filter(merged=False, closed_at__isnull=False).count()) # noRejectedPRs
+        project_data.append(project.pull_requests.filter(merged=False, closed_at__isnull=False).count()/(project.pull_requests.count()*1.0)) # poRejectedPRs
+        project_data.append(avg_time_between_commits(project.commits.all())) # ICT
+        project_data.append(avg_pr_life_time(project.pull_requests.all())) # PRT
+        project_data.append(avg_time_between_prs(project.pull_requests.all())) # IPRT
+        project_data.append(avg_time_between_merged_prs(project.pull_requests.all())) # IMPRT
+        project_data.append(avg_percentage_merged_prs_by_2_weeks(project.pull_requests.all())) # poMPRTW
+        project_data.append(median_time_between_commits(project.commits.all())) # MICT
+        project_data.append(median_pr_life_time(project.pull_requests.all())) # MPRT
+        project_data.append(median_time_between_prs(project.pull_requests.all())) # MIPRT
+        project_data.append(median_time_between_merged_prs(project.pull_requests.all())) # MIMPRT
+        project_data.append(median_percentage_merged_prs_by_2_weeks(project.pull_requests.all())) # poMMPRTW
+        project_data.append(commiters_count(project.commits.all())) # noCommiters
+        project_data.append(number_prs_to_default_branch(project)) # noPRsDF
+        project_data.append(percentage_prs_to_default_branch(project)) # poPRsDF
+        project_data.append(project.github_raw_data.get('forks', 0) if project.github_raw_data else 0) # forks
+        project_data.append(average_prs_commits_number(project.pull_requests.all())) # commitsByPR
+        project_data.append(average_prs_comments_number(project.pull_requests.all())) # commentsByPR
+        project_data.append(average_prs_changed_files_number(project.pull_requests.all())) # changedFilesByPR
+        project_data.append(average_prs_additions_number(project.pull_requests.all())) # additionsByPR
+        project_data.append(average_prs_deletions_number(project.pull_requests.all())) # deletionsByPRs
+        project_data.append('CP' if project.get_pairwise_conflicts_count() > 0 else 'NCP') # target
         projects_data.append(project_data)
     generate_csv_report(projects_data)
 
