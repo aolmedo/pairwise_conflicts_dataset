@@ -275,7 +275,7 @@ def main():
         project_data.append(project.name) # project name
         project_data.append((datetime.datetime(2019, 6, 1).astimezone() - project.created_at).days) # AGE
         project_data.append(project.number_of_files) # noFiles
-        project_date.append(project.loc) # LoC
+        project_data.append(project.loc) # LoC
         project_data.append(project.loc/(project.number_of_files*1.0)) #LoCbyFiles
         project_data.append(project.commits.count()) # noCommits
         project_data.append(project.pull_requests.count()) # noPRs
