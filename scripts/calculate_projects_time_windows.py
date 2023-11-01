@@ -6,14 +6,14 @@ import subprocess
 
 def main():
     from pairwise_conflict_dataset.models import Project
-    projects = Project.objects.filter(id__gte=288).order_by('created_at')
+    projects = Project.objects.filter(pairwise_conflicts_count__gt=0)
     total_count = len(projects)
     for i, project in enumerate(projects):
         print(i + 1, "/", total_count)
         print(project.name)
         # calculate IPE time windows
         print("Calculate IPE time windows")
-        subprocess.run(["python", "manage.py", "calculate_ipe_time_windows", "--project_name", project.name, "--time_interval", "90"],
+        subprocess.run(["python", "manage.py", "calculate_ipe_time_windows", "--project_name", project.name, "--time_interval", "14"],
                        capture_output=True)
 
 
