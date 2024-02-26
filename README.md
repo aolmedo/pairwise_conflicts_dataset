@@ -38,6 +38,8 @@ Feature extraction:
 
     python scripts/extract_features.py
 
+Extracted project features can be found [here](https://github.com/aolmedo/pairwise_conflicts_dataset/blob/main/results/projects_features.csv).
+
 ### Integration process analysis
 
 Calculate projects time windows info:
@@ -48,3 +50,4 @@ Calculate projects time windows statistics:
 
      python scripts/calculate_projects_ipe_stats.py
 
+Statistical data on the integration processes of projects with conflicts can be found [here](https://github.com/aolmedo/pairwise_conflicts_dataset/blob/main/results/projects_ipe_stats.csv).
