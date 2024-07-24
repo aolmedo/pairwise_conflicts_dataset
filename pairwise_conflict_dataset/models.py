@@ -11,10 +11,9 @@ class Project(models.Model):
     language = models.CharField(_(u'language'), max_length=255)
     created_at = models.DateTimeField(_(u'created at'))
     default_branch = models.CharField(_(u'default branch'), max_length=255, null=True, blank=True)
-    # first_pc_date = models.DateTimeField(_(u'first pairwise conflict date'), null=True, blank=True)
-    # last_pc_date = models.DateTimeField(_(u'last pairwise conflict date'), null=True, blank=True)
     loc = models.PositiveIntegerField(_(u'LoC'), null=True, blank=True)
     number_of_files = models.PositiveIntegerField(_(u'number of files'), null=True, blank=True)
+    forks = models.PositiveIntegerField(_(u'number of forks'), null=True, blank=True)
     pairwise_conflicts_count = models.PositiveIntegerField(_(u'pairwise conflict count'), null=True, blank=True)
     data_quality_percentage = models.DecimalField(_(u'data quality (%)'), max_digits=10, decimal_places=2,
                                                   null=True, blank=True)
@@ -56,6 +55,8 @@ class Commit(models.Model):
     project = models.ForeignKey(Project, on_delete=models.PROTECT, verbose_name="project", related_name='commits')
     sha = models.CharField(_(u'sha'), max_length=40)
     created_at = models.DateTimeField(_(u'created at'))
+    author_id = models.PositiveIntegerField(_(u'author id'), null=True, blank=True)
+    commiter_id = models.PositiveIntegerField(_(u'commiter id'), null=True, blank=True)
     raw_data = models.JSONField(_(u'raw data'))
 
     def __str__(self):
@@ -71,7 +72,7 @@ class PullRequest(models.Model):
     ghtorrent_id = models.PositiveIntegerField(_(u'GHTorrent ID'))
     project = models.ForeignKey(Project, on_delete=models.PROTECT,
                                 verbose_name="project", related_name='pull_requests')
-    github_id = models.PositiveIntegerField(_(u'github id'))
+    github_id = models.PositiveIntegerField(_(u'number'))
     base_commit = models.ForeignKey(Commit, on_delete=models.PROTECT, null=True, blank=True,
                                     verbose_name="base commit", related_name='base_pull_requests')
     head_commit = models.ForeignKey(Commit, on_delete=models.PROTECT, null=True, blank=True,
@@ -81,6 +82,11 @@ class PullRequest(models.Model):
     opened_at = models.DateTimeField(_(u'opened at'))
     closed_at = models.DateTimeField(_(u'closed at'), null=True, blank=True)
     base_branch = models.CharField(_(u'target branch'), max_length=255, null=True, blank=True)
+    commits = models.PositiveIntegerField(_(u'number of commits'), null=True, blank=True)
+    comments = models.PositiveIntegerField(_(u'number of comments'), null=True, blank=True)
+    additions = models.PositiveIntegerField(_(u'number of additions'), null=True, blank=True)
+    deletions = models.PositiveIntegerField(_(u'number of deletions'), null=True, blank=True)
+    changed_files = models.PositiveIntegerField(_(u'number of changed files'), null=True, blank=True)
     raw_data = models.JSONField(_(u'raw data'))
     github_raw_data = models.JSONField(_(u'github raw data'), null=True, blank=True)
 
